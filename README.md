@@ -364,7 +364,7 @@ git add app alembic tests postman Dockerfile docker-compose.yml alembic.ini requ
 git status
 git check-ignore -v .env venv
 git commit -m "Build ShopEase User Management Microservice"
-git remote add origin https://github.com/<YOUR-USERNAME>/shopease-user-service.git
+git remote add origin https://github.com/KAMBAMPURUSHOTHAMSAI/shopease-user-service.git
 git push -u origin main
 ```
 
