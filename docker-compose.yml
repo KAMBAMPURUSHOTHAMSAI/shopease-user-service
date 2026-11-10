@@ -1,0 +1,48 @@
+services:
+  user-db:
+    image: mysql:8.4
+    container_name: shopease-user-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:?Set DB_NAME in .env}
+      MYSQL_USER: ${DB_USER:?Set DB_USER in .env}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?Set DB_ROOT_PASSWORD in .env}
+    ports:
+      - "${DB_PORT:-3309}:3306"
+    volumes:
+      - user_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  user-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: shopease-user-service:latest
+    container_name: shopease-user-container
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      APP_PORT: 8004
+      DB_HOST: user-db
+      DB_PORT: 3306
+    ports:
+      - "${APP_PORT:-8004}:8004"
+    depends_on:
+      user-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8004/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  user_mysql_data:

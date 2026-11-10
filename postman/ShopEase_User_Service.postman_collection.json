@@ -1,0 +1,46 @@
+{
+  "info": {
+    "_postman_id": "2a44b39d-1e50-4d8e-8872-9b7c4dd3a801",
+    "name": "ShopEase User Management Service",
+    "description": "User profile and delivery-address APIs. Obtain the bearer token from the separate ShopEase Authentication Service; this collection does not register or log in users.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{"key": "token", "value": "{{access_token}}", "type": "string"}]
+  },
+  "variable": [
+    {"key": "base_url", "value": "http://localhost:8004"},
+    {"key": "access_token", "value": ""},
+    {"key": "profile_id", "value": ""},
+    {"key": "address_id", "value": ""},
+    {"key": "second_address_id", "value": ""}
+  ],
+  "item": [
+    {
+      "name": "User Profile",
+      "item": [
+        {"name": "Create Profile", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"full_name\": \"ShopEase Test User\",\n  \"phone_number\": \"+91 9876543210\",\n  \"date_of_birth\": \"2000-01-10\",\n  \"gender\": \"Prefer not to say\",\n  \"profile_image\": null\n}"}, "url": "{{base_url}}/api/users/profile"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Profile created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('profile_id', pm.response.json().id);"]}}]},
+        {"name": "Get My Profile", "request": {"method": "GET", "url": "{{base_url}}/api/users/profile"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Profile retrieved', () => pm.response.to.have.status(200));"]}}]},
+        {"name": "Replace My Profile", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"full_name\": \"ShopEase Updated User\",\n  \"phone_number\": \"+91 9123456780\",\n  \"date_of_birth\": \"2000-01-10\",\n  \"gender\": \"Other\",\n  \"profile_image\": null\n}"}, "url": "{{base_url}}/api/users/profile"}},
+        {"name": "Patch My Profile", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"full_name\": \"ShopEase Patched User\"\n}"}, "url": "{{base_url}}/api/users/profile"}},
+        {"name": "Get Account Profile", "request": {"method": "GET", "url": "{{base_url}}/api/users/account"}},
+        {"name": "Deactivate My Local Profile", "request": {"method": "POST", "url": "{{base_url}}/api/users/profile/deactivate"}},
+        {"name": "Delete My Profile (destructive)", "request": {"method": "DELETE", "url": "{{base_url}}/api/users/profile"}}
+      ]
+    },
+    {
+      "name": "Delivery Addresses",
+      "item": [
+        {"name": "Create Home Address (default)", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"address_type\": \"Home\",\n  \"full_name\": \"ShopEase Test User\",\n  \"phone_number\": \"+91 9876543210\",\n  \"address_line_1\": \"12 Main Road\",\n  \"address_line_2\": \"Near City Park\",\n  \"city\": \"Kurnool\",\n  \"state\": \"Andhra Pradesh\",\n  \"country\": \"India\",\n  \"postal_code\": \"518001\",\n  \"is_default\": true\n}"}, "url": "{{base_url}}/api/users/addresses"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Address created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('address_id', pm.response.json().id);"]}}]},
+        {"name": "Create Office Address", "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"address_type\": \"Office\",\n  \"full_name\": \"ShopEase Test User\",\n  \"phone_number\": \"+91 9876543210\",\n  \"address_line_1\": \"88 Business Park\",\n  \"address_line_2\": null,\n  \"city\": \"Kurnool\",\n  \"state\": \"Andhra Pradesh\",\n  \"country\": \"India\",\n  \"postal_code\": \"518002\",\n  \"is_default\": false\n}"}, "url": "{{base_url}}/api/users/addresses"}, "event": [{"listen": "test", "script": {"type": "text/javascript", "exec": ["pm.test('Second address created', () => pm.response.to.have.status(201));", "if (pm.response.code === 201) pm.collectionVariables.set('second_address_id', pm.response.json().id);"]}}]},
+        {"name": "List My Addresses", "request": {"method": "GET", "url": "{{base_url}}/api/users/addresses"}},
+        {"name": "Get Address by ID", "request": {"method": "GET", "url": "{{base_url}}/api/users/addresses/{{address_id}}"}},
+        {"name": "Update Address", "request": {"method": "PUT", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"address_type\": \"Home\",\n  \"full_name\": \"Updated Recipient\",\n  \"phone_number\": \"+91 9876543210\",\n  \"address_line_1\": \"21 Updated Road\",\n  \"address_line_2\": null,\n  \"city\": \"Nandyal\",\n  \"state\": \"Andhra Pradesh\",\n  \"country\": \"India\",\n  \"postal_code\": \"518501\",\n  \"is_default\": true\n}"}, "url": "{{base_url}}/api/users/addresses/{{address_id}}"}},
+        {"name": "Patch Address", "request": {"method": "PATCH", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"city\": \"Adoni\"\n}"}, "url": "{{base_url}}/api/users/addresses/{{address_id}}"}},
+        {"name": "Set Default Address", "request": {"method": "PATCH", "url": "{{base_url}}/api/users/addresses/{{second_address_id}}/default"}},
+        {"name": "Delete Address (destructive)", "request": {"method": "DELETE", "url": "{{base_url}}/api/users/addresses/{{address_id}}"}}
+      ]
+    }
+  ]
+}
